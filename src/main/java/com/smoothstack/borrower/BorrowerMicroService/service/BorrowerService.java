@@ -25,6 +25,10 @@ public class BorrowerService {
 	private BookLoanDao loanDao;
 	@Autowired
 	private BookCopyDao bookCopyDao;
+	
+	public List<BookLoan> getAllLoans() {
+		return loanDao.getAllObjects();
+	}
 
 	public List<BookLoan> getBookLoans(int cardNumber) {
 		return loanDao.getAllObjects(cardNumber);

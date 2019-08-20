@@ -22,6 +22,17 @@ public class BorrowerController {
 
 	@Autowired
 	private BorrowerService borrowerService;
+	
+	@GetMapping(value = "/bookloans", produces = "application/json")
+	public ResponseEntity<List<BookLoan>> allLoans() {
+		List<BookLoan> bookLoan = borrowerService.getAllLoans();
+		
+		if (bookLoan.isEmpty()) {
+			return new ResponseEntity<List<BookLoan>>(HttpStatus.NOT_FOUND);
+		} else {
+			return new ResponseEntity<List<BookLoan>>(bookLoan, HttpStatus.OK);
+		}
+	}
 
 	@GetMapping(value = "/{cardNumber}/bookloans", produces = "application/json")
 	public ResponseEntity<List<BookLoan>> allCheckedOutBooks(@PathVariable("cardNumber") int cardNumber) {
