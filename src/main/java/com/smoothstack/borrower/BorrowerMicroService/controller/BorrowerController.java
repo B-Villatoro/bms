@@ -1,7 +1,6 @@
 package com.smoothstack.borrower.BorrowerMicroService.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +22,10 @@ public class BorrowerController {
 	@Autowired
 	private BorrowerService borrowerService;
 	
+	
 	@GetMapping(value = "/bookloans", produces = "application/json")
 	public ResponseEntity<List<BookLoan>> allLoans() {
 		List<BookLoan> bookLoan = borrowerService.getAllLoans();
-		
 		if (bookLoan.isEmpty()) {
 			return new ResponseEntity<List<BookLoan>>(HttpStatus.NOT_FOUND);
 		} else {
@@ -36,7 +35,7 @@ public class BorrowerController {
 
 	@GetMapping(value = "/{cardNumber}/bookloans", produces = "application/json")
 	public ResponseEntity<List<BookLoan>> allCheckedOutBooks(@PathVariable("cardNumber") int cardNumber) {
-		List<BookLoan> bookLoan = borrowerService.getBookLoans(cardNumber);
+		List<BookLoan> bookLoan = borrowerService.getBookLoansByCardNumber(cardNumber);
 		
 		if (bookLoan.isEmpty()) {
 			return new ResponseEntity<List<BookLoan>>(HttpStatus.NOT_FOUND);

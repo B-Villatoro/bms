@@ -1,18 +1,35 @@
 package com.smoothstack.borrower.BorrowerMicroService.entity;
 
+
+
 import java.sql.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+
+@Entity@IdClass(BookLoanId.class)
+@Table(name="tbl_book_loans")
 public class BookLoan {
-	
+	@Id
+	@Column(name="bookId")
 	private int bookId;
+	@Id
+	@Column(name="branchId")
 	private int branchId;
+	@Id
+	@Column(name="cardNo")
 	private int cardNo;
+	
+	@Column(name="dateOut")
 	private Date dateOut;
+	
+	@Column(name="dueDate")
 	private Date dueDate;
 	
-	public BookLoan() {
-		
-	}
+	public BookLoan() {}
 	
 	public BookLoan(int bookId, int branchId, int cardNo, Date dateOut, Date dueDate) {
 		this.bookId = bookId;
@@ -20,7 +37,6 @@ public class BookLoan {
 		this.cardNo = cardNo;
 		this.dateOut = dateOut;
 		this.dueDate = dueDate;
-		
 	}
 	
 	public BookLoan(int bookId, int branchId, int cardNo) {
@@ -74,7 +90,5 @@ public class BookLoan {
 		return "BookLoan info: [bookId=" + bookId + ", branchId=" + branchId + ", cardNo=" + cardNo + ", dateOut=" + dateOut
 				+ ", dueDate=" + dueDate + "]"+"\n";
 	}
-	
-	
-	
 }
+

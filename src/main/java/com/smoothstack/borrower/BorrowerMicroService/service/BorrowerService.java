@@ -3,56 +3,53 @@ package com.smoothstack.borrower.BorrowerMicroService.service;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.smoothstack.borrower.BorrowerMicroService.dao.BookCopyDao;
 import com.smoothstack.borrower.BorrowerMicroService.dao.BookLoanDao;
-import com.smoothstack.borrower.BorrowerMicroService.dao.BorrowerDao;
 import com.smoothstack.borrower.BorrowerMicroService.entity.BookCopy;
+import com.smoothstack.borrower.BorrowerMicroService.entity.BookCopyId;
 import com.smoothstack.borrower.BorrowerMicroService.entity.BookLoan;
-import com.smoothstack.borrower.BorrowerMicroService.entity.Borrower;
+import com.smoothstack.borrower.BorrowerMicroService.entity.BookLoanId;
 
 @Service
 public class BorrowerService {
 
 	@Autowired
-	private BorrowerDao borrowerDao;
-	@Autowired
 	private BookLoanDao loanDao;
 	@Autowired
 	private BookCopyDao bookCopyDao;
-	
+
 	public List<BookLoan> getAllLoans() {
-		return loanDao.getAllObjects();
+		return loanDao.findAll();
 	}
 
-	public List<BookLoan> getBookLoans(int cardNumber) {
-		return loanDao.getAllObjects(cardNumber);
+	public List<BookLoan> getBookLoansByCardNumber(int cardNumber) {
+		return loanDao.findByCardNumber(cardNumber);
 	}
 
 	public void deleteBookLoans(int bookId, int branchId, int cardNumber) {
-		loanDao.deleteObjectWith(bookId, branchId, cardNumber);
-		BookCopy bookCopy = bookCopyDao.getOneWith(bookId, branchId);
-		bookCopy.setNoOfCopies(bookCopy.getNoOfCopies()+1);
-		bookCopyDao.updateObject(bookCopy);
+		BookLoanId bl = new BookLoanId(bookId, branchId, cardNumber);
+		loanDao.deleteById(bl);
+		Optional<BookCopy> bookCopy = bookCopyDao.findById(new BookCopyId(bookId, branchId));
+		bookCopy.get().setNoOfCopies(bookCopy.get().getNoOfCopies() + 1);
+		bookCopyDao.save(bookCopy.get());
 	}
 
 	public BookLoan addBookLoan(int bookId, int branchId, int cardNumber) {
 		BookLoan bookLoan = new BookLoan(bookId, branchId, cardNumber, dateOut(), dateDue(dateOut()));
-		BookCopy bookCopy = bookCopyDao.getOneWith(bookId, branchId);
-		bookCopy.setNoOfCopies(bookCopy.getNoOfCopies()-1);
-		bookCopyDao.updateObject(bookCopy);		
-		loanDao.createObject(bookLoan);
+		Optional<BookCopy> bookCopy = bookCopyDao.findById(new BookCopyId(bookId, branchId));
+		bookCopy.get().setNoOfCopies(bookCopy.get().getNoOfCopies() - 1);
+		bookCopyDao.save(bookCopy.get());
+		loanDao.save(bookLoan);
 		return bookLoan;
 	}
 
 	public boolean validNumberOfCopies(BookLoan bookLoan) {
-		BookCopy bookCopy = bookCopyDao.getOneWith(bookLoan.getBookId(), bookLoan.getBranchId());
-		if (bookCopy.getNoOfCopies() > 0) {
+		Optional<BookCopy> bookCopy = bookCopyDao.findById(new BookCopyId(bookLoan.getBookId(), bookLoan.getBranchId()));
+		if (bookCopy.get().getNoOfCopies() > 0) {
 			return true;
 		} else {
 			return false;
@@ -60,7 +57,8 @@ public class BorrowerService {
 	}
 
 	public BookLoan getOneBookLoan(int bookId, int branchId, int cardNumber) {
-		return loanDao.getOneObject(bookId, branchId, cardNumber);
+		BookLoanId bli = new BookLoanId(bookId, branchId, cardNumber);
+		return loanDao.findById(bli).get();
 	}
 
 	private Date dateOut() {
@@ -74,35 +72,27 @@ public class BorrowerService {
 		Date dueDate = java.sql.Date.valueOf(localDate.plusDays(7));
 		return dueDate;
 	}
-
-	public Boolean doesBorrowerHaveValidCard(int card) {
-		List<Borrower> borrowers = new ArrayList<Borrower>();
-		borrowers = borrowerDao.getAllObjects();
-		int found = 0;
-		for (Borrower borrower : borrowers) {
-			if (borrower.getCardNo() == card) {
-				found++;
-			}
-		}
-		if (found > 0) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
+	
 	public Boolean bookCheckedOutAlready(int cardNumber, int branchId, int bookId) {
-		List<BookLoan> loans = loanDao.getAllObjects(cardNumber);
-		int found = 0;
-		for (BookLoan loan : loans) {
-			if (loan.getCardNo() == cardNumber & loan.getBookId() == bookId & loan.getBranchId() == branchId) {
-				found++;
-			}
-		}
-		if (found > 0) {
-			return true;
-		} else {
-			return false;
-		}
+		Optional<BookLoan> bookLoan = loanDao.findById(new BookLoanId(bookId, branchId, cardNumber));
+		return bookLoan.isPresent();
 	}
+
+//	public Boolean doesBorrowerHaveValidCard(int card) {
+//		List<Borrower> borrowers = new ArrayList<Borrower>();
+//		borrowers = borrowerDao.getAllObjects();
+//		int found = 0;
+//		for (Borrower borrower : borrowers) {
+//			if (borrower.getCardNo() == card) {
+//				found++;
+//			}
+//		}
+//		if (found > 0) {
+//			return true;
+//		} else {
+//			return false;
+//		}
+//	}
+
+	
 }

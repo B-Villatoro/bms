@@ -1,10 +1,21 @@
 package com.smoothstack.borrower.BorrowerMicroService.entity;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="tbl_borrower")
 public class Borrower {
 	
+	@Id
 	private int cardNo;
+	@Column(name="name")
 	private String BorrowerName;
+	@Column(name="address")
 	private String borrowerAddress;
+	@Column(name="phone")
 	private String borrowerPhone;
 	
 	public Borrower() {
