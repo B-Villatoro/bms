@@ -32,8 +32,8 @@ public class BorrowerController {
 			return new ResponseEntity<List<BookLoan>>(bookLoan, HttpStatus.OK);
 		}
 	}
-	
-	@GetMapping(value = "/{cardNumber}/bookloans")
+
+	@GetMapping(value = "/{cardNumber}/bookloans",produces = { "application/xml", "application/json"})
 	public ResponseEntity<List<BookLoan>> allCheckedOutBooks(@PathVariable("cardNumber") int cardNumber) {
 		List<BookLoan> bookLoan = borrowerService.getBookLoansByCardNumber(cardNumber);
 
@@ -68,19 +68,20 @@ public class BorrowerController {
 		return new ResponseEntity<BookLoan>(HttpStatus.OK);
 	}
 
-	@DeleteMapping(value = "/bookloan/returnbook", consumes = { "application/xml", "application/json" })
-	public ResponseEntity<List<BookLoan>> returnCheckedOutBook(@RequestBody BookLoan bookLoan) {
+	@DeleteMapping(value = "/bookloan/returnbook/book/{bookId}/branch/{branchId}/cardno/{cardNumber}")
+	public HttpStatus returnCheckedOutBook(@PathVariable("bookId") int bookId,
+			@PathVariable("branchId") int branchId, @PathVariable("cardNumber") int cardNumber) {
+		BookLoan bookLoan = new BookLoan(bookId,branchId,cardNumber);
 		boolean checkedOut = borrowerService.bookCheckedOutAlready(bookLoan);
 		if (checkedOut) {
 			borrowerService.deleteBookLoans(bookLoan);
-			return new ResponseEntity<List<BookLoan>>(HttpStatus.OK);
+			return HttpStatus.OK;
 		} else {
-			return new ResponseEntity<List<BookLoan>>(HttpStatus.NOT_FOUND);
+			return HttpStatus.NOT_FOUND;
 		}
 	}
 
 	// Debugging methods
-	
 
 	// Debug
 	@GetMapping(value = "/{cardNumber}/branch/{branchId}/book/{bookId}")
