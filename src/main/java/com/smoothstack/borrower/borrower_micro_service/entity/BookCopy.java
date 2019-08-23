@@ -1,4 +1,4 @@
-package com.smoothstack.borrower.BorrowerMicroService.entity;
+package com.smoothstack.borrower.borrower_micro_service.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

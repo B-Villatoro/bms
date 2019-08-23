@@ -1,4 +1,4 @@
-package com.smoothstack.borrower.BorrowerMicroService;
+package com.smoothstack.borrower.borrower_micro_service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

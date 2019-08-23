@@ -1,4 +1,4 @@
-package com.smoothstack.borrower.BorrowerMicroService.service;
+package com.smoothstack.borrower.borrower_micro_service.service;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -7,12 +7,13 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.smoothstack.borrower.BorrowerMicroService.dao.BookCopyDao;
-import com.smoothstack.borrower.BorrowerMicroService.dao.BookLoanDao;
-import com.smoothstack.borrower.BorrowerMicroService.entity.BookCopy;
-import com.smoothstack.borrower.BorrowerMicroService.entity.BookCopyId;
-import com.smoothstack.borrower.BorrowerMicroService.entity.BookLoan;
-import com.smoothstack.borrower.BorrowerMicroService.entity.BookLoanId;
+
+import com.smoothstack.borrower.borrower_micro_service.dao.BookCopyDao;
+import com.smoothstack.borrower.borrower_micro_service.dao.BookLoanDao;
+import com.smoothstack.borrower.borrower_micro_service.entity.BookCopy;
+import com.smoothstack.borrower.borrower_micro_service.entity.BookCopyId;
+import com.smoothstack.borrower.borrower_micro_service.entity.BookLoan;
+import com.smoothstack.borrower.borrower_micro_service.entity.BookLoanId;
 
 @Service
 public class BorrowerService {
@@ -29,11 +30,20 @@ public class BorrowerService {
 	public List<BookLoan> getBookLoansByCardNumber(int cardNumber) {
 		return loanDao.findByCardNumber(cardNumber);
 	}
+	
+	public BookLoan checkOutBook(BookLoan bookLoan) {
+		BookLoan checkOut = new BookLoan(bookLoan.getBookId(), bookLoan.getBranchId(), bookLoan.getCardNo(), dateOut(), dateDue(dateOut()));
+		Optional<BookCopy> bookCopy = bookCopyDao.findById(new BookCopyId(checkOut.getBookId(), checkOut.getBranchId()));
+		bookCopy.get().setNoOfCopies(bookCopy.get().getNoOfCopies() - 1);
+		bookCopyDao.save(bookCopy.get());
+		loanDao.save(checkOut);
+		return checkOut;
+	}
 
-	public void deleteBookLoans(int bookId, int branchId, int cardNumber) {
-		BookLoanId bl = new BookLoanId(bookId, branchId, cardNumber);
+	public void deleteBookLoans(BookLoan bookLoan) {
+		BookLoanId bl = new BookLoanId(bookLoan.getBookId(), bookLoan.getBranchId(), bookLoan.getCardNo());
 		loanDao.deleteById(bl);
-		Optional<BookCopy> bookCopy = bookCopyDao.findById(new BookCopyId(bookId, branchId));
+		Optional<BookCopy> bookCopy = bookCopyDao.findById(new BookCopyId(bookLoan.getBookId(), bookLoan.getBranchId()));
 		bookCopy.get().setNoOfCopies(bookCopy.get().getNoOfCopies() + 1);
 		bookCopyDao.save(bookCopy.get());
 	}
@@ -55,6 +65,11 @@ public class BorrowerService {
 			return false;
 		}
 	}
+	
+	public BookLoan getOneBookLoan(BookLoan bookLoan) {
+		BookLoanId bli = new BookLoanId(bookLoan.getBookId(), bookLoan.getBranchId(), bookLoan.getCardNo());
+		return loanDao.findById(bli).get();
+	}
 
 	public BookLoan getOneBookLoan(int bookId, int branchId, int cardNumber) {
 		BookLoanId bli = new BookLoanId(bookId, branchId, cardNumber);
@@ -73,10 +88,12 @@ public class BorrowerService {
 		return dueDate;
 	}
 	
-	public Boolean bookCheckedOutAlready(int cardNumber, int branchId, int bookId) {
-		Optional<BookLoan> bookLoan = loanDao.findById(new BookLoanId(bookId, branchId, cardNumber));
-		return bookLoan.isPresent();
+	public Boolean bookCheckedOutAlready(BookLoan bookLoan) {
+		Optional<BookLoan> boolbookLoan = loanDao.findById(new BookLoanId(bookLoan.getBookId(), bookLoan.getBranchId(), bookLoan.getCardNo()));
+		return boolbookLoan.isPresent();
 	}
+
+	
 
 //	public Boolean doesBorrowerHaveValidCard(int card) {
 //		List<Borrower> borrowers = new ArrayList<Borrower>();

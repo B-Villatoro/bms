@@ -1,4 +1,4 @@
-package com.smoothstack.borrower.BorrowerMicroService.entity;
+package com.smoothstack.borrower.borrower_micro_service.entity;
 
 import java.io.Serializable;
 
@@ -8,6 +8,9 @@ public class BookCopyId implements Serializable{
 	
 	private int bookId;
 	private int branchId;
+	
+	public BookCopyId() {}
+	
 	public BookCopyId(int bookId, int branchId) {
 		super();
 		this.bookId = bookId;

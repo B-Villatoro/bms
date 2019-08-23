@@ -1,12 +1,13 @@
-package com.smoothstack.borrower.BorrowerMicroService.dao;
+package com.smoothstack.borrower.borrower_micro_service.dao;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import com.smoothstack.borrower.BorrowerMicroService.entity.BookLoan;
-import com.smoothstack.borrower.BorrowerMicroService.entity.BookLoanId;
+
+import com.smoothstack.borrower.borrower_micro_service.entity.BookLoan;
+import com.smoothstack.borrower.borrower_micro_service.entity.BookLoanId;
 
 @Repository
 public interface BookLoanDao extends JpaRepository<BookLoan, BookLoanId> {
