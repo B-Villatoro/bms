@@ -26,7 +26,8 @@ public class BorrowerController {
 	@Autowired
 	private BorrowerService borrowerService;
 
-	@RequestMapping(value = "/bookloans",method = RequestMethod.GET,  produces = {"application/xml","application/json" })
+	@RequestMapping(value = "/bookloans", method = RequestMethod.GET, produces = { "application/xml",
+			"application/json" })
 	public ResponseEntity<List<BookLoan>> allLoans() {
 		List<BookLoan> bookLoan = borrowerService.getAllLoans();
 		if (bookLoan.isEmpty()) {
@@ -36,7 +37,7 @@ public class BorrowerController {
 		}
 	}
 
-	@GetMapping(value = "/{cardNumber}/bookloans",produces = { "application/xml","application/json"})
+	@GetMapping(value = "/{cardNumber}/bookloans", produces = { "application/xml", "application/json" })
 	public ResponseEntity<List<BookLoan>> allCheckedOutBooks(@PathVariable("cardNumber") int cardNumber) {
 		List<BookLoan> bookLoan = borrowerService.getBookLoansByCardNumber(cardNumber);
 
@@ -47,7 +48,8 @@ public class BorrowerController {
 		}
 	}
 
-	@PostMapping(value = "/bookloan/checkout", produces = { "application/xml", "application/json" }, consumes = {"application/xml", "application/json" })
+	@PostMapping(value = "/bookloan/checkout", produces = { "application/xml", "application/json" }, consumes = {
+			"application/x-www-form-urlencoded", "application/xml", "application/json" })
 	public ResponseEntity<BookLoan> checkOutBook(@RequestBody BookLoan bookLoan) {
 
 		boolean checkedOut = borrowerService.bookCheckedOutAlready(bookLoan);
@@ -70,10 +72,10 @@ public class BorrowerController {
 		return new ResponseEntity<BookLoan>(HttpStatus.OK);
 	}
 
-	@DeleteMapping(value = "/bookloan/returnbook/book/{bookId}/branch/{branchId}/cardno/{cardNumber}")
-	public HttpStatus returnCheckedOutBook(@PathVariable("bookId") int bookId,
-			@PathVariable("branchId") int branchId, @PathVariable("cardNumber") int cardNumber) {
-		BookLoan bookLoan = new BookLoan(bookId,branchId,cardNumber);
+	@RequestMapping(value = "/bookloan/returnbook/book/{bookId}/branch/{branchId}/cardno/{cardNumber}", method = RequestMethod.DELETE)
+	public HttpStatus returnCheckedOutBook(@PathVariable("bookId") int bookId, @PathVariable("branchId") int branchId,
+			@PathVariable("cardNumber") int cardNumber) {
+		BookLoan bookLoan = new BookLoan(bookId, branchId, cardNumber);
 		boolean checkedOut = borrowerService.bookCheckedOutAlready(bookLoan);
 		if (checkedOut) {
 			borrowerService.deleteBookLoans(bookLoan);
