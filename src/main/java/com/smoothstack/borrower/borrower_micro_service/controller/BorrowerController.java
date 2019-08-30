@@ -23,7 +23,7 @@ public class BorrowerController {
 	@Autowired
 	private BorrowerService borrowerService;
 
-	@GetMapping(value = "/bookloans", produces = { "application/json" })
+	@GetMapping(value = "/bookloans", produces = { "application/xml","application/json" })
 	public ResponseEntity<List<BookLoan>> allLoans() {
 		List<BookLoan> bookLoan = borrowerService.getAllLoans();
 		if (bookLoan.isEmpty()) {
@@ -33,7 +33,7 @@ public class BorrowerController {
 		}
 	}
 
-	@GetMapping(value = "/{cardNumber}/bookloans",produces = { "application/json"})
+	@GetMapping(value = "/{cardNumber}/bookloans",produces = { "application/xml","application/json"})
 	public ResponseEntity<List<BookLoan>> allCheckedOutBooks(@PathVariable("cardNumber") int cardNumber) {
 		List<BookLoan> bookLoan = borrowerService.getBookLoansByCardNumber(cardNumber);
 
@@ -44,8 +44,7 @@ public class BorrowerController {
 		}
 	}
 
-	@PostMapping(value = "/bookloan/checkout", produces = { "application/xml", "application/json" }, consumes = {"text/plain",
-			"application/xml", "application/json" })
+	@PostMapping(value = "/bookloan/checkout", produces = { "application/xml", "application/json" }, consumes = {"application/xml", "application/json" })
 	public ResponseEntity<BookLoan> checkOutBook(@RequestBody BookLoan bookLoan) {
 
 		boolean checkedOut = borrowerService.bookCheckedOutAlready(bookLoan);

@@ -1,4 +1,4 @@
-package com.smoothstack.borrower.borrower_micro_service;
+package com.smoothstack.borrower.borrower_micro_service.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -9,9 +9,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @EnableWebMvc
 public class ContentNegotiate implements WebMvcConfigurer {
-
+	
 	@Override
 	public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-		configurer.defaultContentType(MediaType.APPLICATION_JSON);
+		WebMvcConfigurer.super.configureContentNegotiation(configurer);
+		configurer.defaultContentType(MediaType.APPLICATION_JSON)
+		.mediaType("json", MediaType.APPLICATION_JSON)
+		.mediaType("xml", MediaType.APPLICATION_XML);
 	}
 }
